@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DoDate</title>
+<link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/pulse/bootstrap.min.css" rel="stylesheet"/>
+<style>
+    :root { --dodate-purple: #593196; }
+
+    .progress-btn{
+      width:20px;height:20px;border-radius:50%;
+      background:transparent;cursor:pointer;display:inline-block;
+      border:1px solid #6c757d;
+    }
+    .progress-btn.started{ border:3px solid var(--dodate-purple); }
+    .progress-btn.completed{
+      background-color: var(--dodate-purple);
+      border:2px solid var(--dodate-purple);
+    }
+
+    .focus-btn{ cursor:pointer; color:#6c757d; }
+    .focus-btn.active{ color:var(--dodate-purple); }
+
+    #divCalendar .fc .fc-toolbar-title { font-size: 1.1rem; }
+</style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<div class="container-fluid">
+<a class="navbar-brand fw-bold" href="#"><i class="bi bi-check2-square me-2"></i>DoDate</a>
+
+<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navCategories"></ul>
+
+<div class="d-flex gap-2">
+<button class="btn btn-outline-light btn-sm" data-bs-target="#modalNewTask" data-bs-toggle="modal" type="button">
+<i class="bi bi-plus-lg me-1"></i>Task
+</button>
+<button class="btn btn-outline-light btn-sm" id="btnReload" type="button">
+<i class="bi bi-arrow-clockwise me-1"></i>Reload
+</button>
+</div>
+</div>
+</div>
+</nav>
+
+<div class="container-fluid mt-3">
+
+<div class="alert alert-danger d-none" id="divError" role="alert"></div>
+
+<h4 class="d-none mb-3" id="pageTitle"></h4>
+
+<!-- DASHBOARD -->
+<div id="secDashboard">
+<div class="row g-3">
+<div class="col-md-3">
+<div class="card text-white bg-danger h-100" id="cardOverdue" style="cursor:pointer;">
+<div class="card-body">
+<div class="fw-semibold">Overdue</div>
+<div class="display-6" id="statOverdue">0</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card bg-warning h-100" id="cardDueSoon" style="cursor:pointer;">
+<div class="card-body">
+<div class="fw-semibold">Upcoming</div>
+<div class="display-6" id="statDueSoon">0</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card text-white bg-secondary h-100" id="cardIncomplete" style="cursor:pointer;">
+<div class="card-body">
+<div class="fw-semibold">Incomplete</div>
+<div class="display-6" id="statIncomplete">0</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card text-white bg-success h-100" id="cardInProgress" style="cursor:pointer;">
+<div class="card-body">
+<div class="fw-semibold">In Progress</div>
+<div class="display-6" id="statInProgress">0</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row g-3 mt-3" id="secCalendarFocus">
+<div class="col-lg-8">
+<div class="card h-100">
+<div class="card-header d-flex align-items-center justify-content-between">
+<span class="fw-semibold"><i class="bi bi-calendar3 me-2"></i>Calendar</span>
+</div>
+<div class="card-body">
+<div id="divCalendar"></div>
+</div>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="card h-100">
+<div class="card-header d-flex align-items-center justify-content-between">
+<span class="fw-semibold"><i class="bi bi-brightness-high me-2"></i>Today's Focus</span>
+<span class="badge bg-primary" id="badgeFocusCount">0</span>
+</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table table-hover mb-0" id="tblFocus">
+<thead class="table-light">
+<tr>
+<th>Task / Event</th>
+<th>Category</th>
+<th>Due/Date</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="card mt-3">
+<div class="card-header fw-semibold">Incomplete by Category</div>
+<div class="card-body">
+<div class="small text-muted mb-2" id="catSummaryTotal">0 total</div>
+<div id="catSummaryList"></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- LISTS -->
+<div class="mt-4" id="secLists">
+<div class="card">
+<div class="card-header fw-semibold">Tasks</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table table-hover align-middle mb-0" id="tblTasks">
+<thead class="table-light">
+<tr>
+<th style="width:44px;"></th>
+<th>Task</th>
+<th>Category</th>
+<th style="width:70px;"></th>
+<th>Due</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- NEW TASK MODAL -->
+<div aria-hidden="true" class="modal fade" id="modalNewTask" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">New Task</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+
+<div class="mb-3">
+<label class="form-label">Task Name</label>
+<input class="form-control" id="newTaskName" type="text"/>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Category</label>
+<select class="form-select" id="newTaskCategory"></select>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Description</label>
+<textarea class="form-control" id="newTaskDesc" rows="3"></textarea>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Due Date</label>
+<input class="form-control" id="newTaskDue" type="date"/>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Size</label>
+<select class="form-select" id="newTaskWeight">
+<option value="1">1</option>
+<option value="2">2</option>
+<option selected value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+</select>
+</div>
+
+<div class="d-flex align-items-center gap-2">
+<input class="d-none" id="newTaskFocus" type="checkbox"/>
+<span class="focus-btn" id="newTaskFocusBtn" title="Toggle Today's Focus">
+<i class="bi bi-brightness-high"></i>
+</span>
+<span>Today's Focus</span>
+</div>
+
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="btnCreateTask" type="button">Create Task</button>
+</div>
+</div>
+</div>
+</div>
+
+<script crossorigin="anonymous" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+
+<script>
+    const strBaseURL = "/";
+
+    function $(sel) { return document.querySelector(sel); }
+
+    let cacheTasks = [];
+    let cacheCategories = [];
+
+    let currentCategory = null;
+    let viewMode = "dashboard"; // dashboard | all | category
+    let statFilter = null;      // overdue | dueSoon | incomplete | inProgress | null
+
+    function escapeHtml(s) {
+      return (s ?? "").toString()
+        .replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function showError(msg) {
+      const div = $("#divError");
+      div.textContent = msg || "Error";
+      div.classList.remove("d-none");
+    }
+
+    function clearError() {
+      const div = $("#divError");
+      div.classList.add("d-none");
+      div.textContent = "";
+    }
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      const showDashboard = (mode === "dashboard");
+      $("#secDashboard").classList.toggle("d-none", !showDashboard);
+      $("#secCalendarFocus").classList.toggle("d-none", !showDashboard);
+      $("#secLists").classList.remove("d-none");
+    }
+
+    function setPageTitle(text) {
+      const el = $("#pageTitle");
+      if (!text) { el.textContent = ""; el.classList.add("d-none"); return; }
+      el.textContent = text;
+      el.classList.remove("d-none");
+    }
+
+    function parseDateOnly(dateStr) {
+      if (!dateStr) return null;
+      let s = String(dateStr).trim();
+      if (!s) return null;
+
+      const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (m) s = `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
+
+      const d = new Date(s + "T00:00:00");
+      if (Number.isNaN(d.getTime())) return null;
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function fillCategorySelect(selectEl, categories) {
+      selectEl.innerHTML = "";
+      categories.forEach(c => {
+        const name = (c.category_name ?? "").trim();
+        if (!name) return;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function setSunToggle(btnEl, checkboxEl, isOn) {
+      if (!btnEl || !checkboxEl) return;
+      btnEl.classList.toggle("active", isOn);
+      const icon = btnEl.querySelector("i");
+      if (icon) {
+        icon.classList.remove("bi-brightness-high", "bi-brightness-high-fill");
+        icon.classList.add(isOn ? "bi-brightness-high-fill" : "bi-brightness-high");
+      }
+      checkboxEl.checked = isOn;
+    }
+
+    function renderCategories(categories) {
+      const ul = $("#navCategories");
+      ul.innerHTML = "";
+
+      const addItem = (label, mode, catName = "") => {
+        const li = document.createElement("li");
+        li.className = "nav-item";
+
+        const active =
+          (mode === "dashboard" && viewMode === "dashboard") ||
+          (mode === "all" && viewMode === "all") ||
+          (mode === "category" && viewMode === "category" && currentCategory === catName);
+
+        li.innerHTML = `
+          <a class="nav-link ${active ? "active" : ""}" href="#"
+             data-mode="${mode}" data-cat="${escapeHtml(catName)}">
+            ${escapeHtml(label)}
+          </a>
+        `;
+        ul.appendChild(li);
+      };
+
+      addItem("Dashboard", "dashboard");
+      addItem("All Tasks", "all");
+      categories.forEach(c => {
+        const name = (c.category_name ?? "").trim();
+        if (name) addItem(name, "category", name);
+      });
+
+      ul.querySelectorAll("a[data-mode]").forEach(a => {
+        a.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          statFilter = null;
+
+          const mode = a.getAttribute("data-mode");
+          const cat = a.getAttribute("data-cat") || "";
+
+          if (mode === "dashboard") {
+            currentCategory = null;
+            setViewMode("dashboard");
+            setPageTitle("");
+          } else if (mode === "all") {
+            currentCategory = null;
+            setViewMode("all");
+            setPageTitle("All Tasks");
+          } else {
+            currentCategory = cat;
+            setViewMode("category");
+            setPageTitle(cat);
+          }
+
+          loadDashboard();
+        });
+      });
+    }
+
+    function renderCalendar(taskEvents) {
+      const calendarEl = $("#divCalendar");
+      calendarEl.innerHTML = "";
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        height: "auto",
+        events: taskEvents
+      });
+      calendar.render();
+    }
+
+    function setStats({ overdue, dueSoon, incomplete, inProgress, focusCount }) {
+      $("#statOverdue").textContent = overdue;
+      $("#statDueSoon").textContent = dueSoon;
+      $("#statIncomplete").textContent = incomplete;
+      $("#statInProgress").textContent = inProgress;
+      $("#badgeFocusCount").textContent = focusCount;
+    }
+
+    function clearTables() {
+      $("#tblTasks tbody").innerHTML = "";
+      $("#tblFocus tbody").innerHTML = "";
+    }
+
+    function addTaskRow(task, taskIndex) {
+      const status = (task.status ?? "").toLowerCase();
+
+      let dotClass = "progress-btn";
+      if (status === "started") dotClass += " started";
+      if (status === "completed") dotClass += " completed";
+
+      const isFocus = !!task.todays_focus;
+      const focusClass = isFocus ? "focus-btn active" : "focus-btn";
+      const iconClass = isFocus ? "bi-brightness-high-fill" : "bi-brightness-high";
+
+      const dueDate = parseDateOnly(task.due_date);
+      const today = new Date();
+      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const overdueBadge =
+        (dueDate && dueDate < todayDateOnly && status !== "completed")
+          ? ' <span class="badge bg-danger ms-2">Overdue</span>'
+          : '';
+
+      $("#tblTasks tbody").insertAdjacentHTML("beforeend", `
+        <tr>
+          <td class="text-center">
+            <span class="${dotClass}" data-status-index="${taskIndex}" title="Cycle status"></span>
+          </td>
+          <td class="text-wrap">${escapeHtml(task.task_name ?? "")}</td>
+          <td class="text-wrap">${escapeHtml(task.category_name ?? "")}</td>
+          <td class="text-center">
+            <span class="${focusClass}" data-focus-index="${taskIndex}" title="Toggle Today's Focus">
+              <i class="bi ${iconClass}"></i>
+            </span>
+          </td>
+          <td>${escapeHtml(task.due_date ?? "")}${overdueBadge}</td>
+          <td>${escapeHtml(task.weight ?? "")}</td>
+        </tr>
+      `);
+    }
+
+    async function loadCategoriesForModals() {
+      const res = await fetch(strBaseURL + "categories");
+      if (!res.ok) return;
+      cacheCategories = await res.json();
+      fillCategorySelect($("#newTaskCategory"), cacheCategories);
+    }
+
+    async function cycleTaskStatus(taskIndex) {
+      clearError();
+      const res = await fetch(strBaseURL + `tasks/${taskIndex}/status`, { method: "PATCH" });
+      if (!res.ok) { showError("Failed to update task status."); return; }
+      loadDashboard();
+    }
+
+    async function toggleTaskFocus(taskIndex) {
+      clearError();
+      const res = await fetch(strBaseURL + `tasks/${taskIndex}/focus`, { method: "PATCH" });
+      if (!res.ok) { showError("Failed to update focus."); return; }
+      loadDashboard();
+    }
+
+    async function loadDashboard() {
+      clearError();
+      clearTables();
+
+      try {
+        const [catsRes, tasksRes] = await Promise.all([
+          fetch(strBaseURL + "categories"),
+          fetch(strBaseURL + "tasks")
+        ]);
+
+        if (!catsRes.ok) throw new Error("Failed to load categories");
+        if (!tasksRes.ok) throw new Error("Failed to load tasks");
+
+        const categories = await catsRes.json();
+        const tasksRaw = await tasksRes.json();
+
+        cacheCategories = categories;
+        cacheTasks = tasksRaw.map((t, idx) => ({ ...t, _index: idx }));
+
+        renderCategories(categories);
+
+        const today = new Date();
+        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const soonEnd = new Date(todayDateOnly);
+        soonEnd.setDate(soonEnd.getDate() + 7);
+
+        let overdue = 0, dueSoon = 0, incomplete = 0, inProgress = 0, focusCount = 0;
+
+        const taskEvents = [];
+        const byCat = {};
+        categories.forEach(c => {
+          const name = (c.category_name ?? "").trim();
+          if (name) byCat[name] = 0;
+        });
+
+        cacheTasks.forEach(t => {
+          const status = (t.status ?? "").toLowerCase();
+          const due = parseDateOnly(t.due_date);
+
+          if (status !== "completed") {
+            incomplete++;
+            const cat = (t.category_name ?? "Uncategorized").trim() || "Uncategorized";
+            if (!(cat in byCat)) byCat[cat] = 0;
+            byCat[cat] += 1;
+          }
+          if (status === "started") inProgress++;
+
+          if (due && status !== "completed") {
+            if (due < todayDateOnly) overdue++;
+            if (due >= todayDateOnly && due <= soonEnd) dueSoon++;
+            taskEvents.push({ title: t.task_name ?? "", start: due.toISOString().split("T")[0] });
+          }
+        });
+
+        let tasksToShow = cacheTasks;
+
+        if (viewMode === "category" && currentCategory) {
+          tasksToShow = tasksToShow.filter(t => (t.category_name ?? "") === currentCategory);
+        }
+
+        if (statFilter) {
+          if (statFilter === "overdue") {
+            tasksToShow = tasksToShow.filter(t => {
+              const due = parseDateOnly(t.due_date);
+              const s = (t.status ?? "").toLowerCase();
+              return due && due < todayDateOnly && s !== "completed";
+            });
+          } else if (statFilter === "dueSoon") {
+            tasksToShow = tasksToShow.filter(t => {
+              const due = parseDateOnly(t.due_date);
+              const s = (t.status ?? "").toLowerCase();
+              return due && due >= todayDateOnly && due <= soonEnd && s !== "completed";
+            });
+          } else if (statFilter === "incomplete") {
+            tasksToShow = tasksToShow.filter(t => (t.status ?? "").toLowerCase() === "incomplete");
+          } else if (statFilter === "inProgress") {
+            tasksToShow = tasksToShow.filter(t => (t.status ?? "").toLowerCase() === "started");
+          }
+        }
+
+        tasksToShow.forEach(t => addTaskRow(t, t._index));
+
+        $("#tblFocus tbody").innerHTML = "";
+        cacheTasks.forEach(t => {
+          const status = (t.status ?? "").toLowerCase();
+          const due = parseDateOnly(t.due_date);
+          const dueToday = due && due.getTime() === todayDateOnly.getTime() && status !== "completed";
+          if (!!t.todays_focus || dueToday) {
+            focusCount++;
+            $("#tblFocus tbody").insertAdjacentHTML("beforeend", `
+              <tr>
+                <td>${escapeHtml(t.task_name ?? "")}</td>
+                <td>${escapeHtml(t.category_name ?? "")}</td>
+                <td>${escapeHtml(t.due_date ?? "")}</td>
+                <td>${escapeHtml(t.weight ?? "")}</td>
+              </tr>
+            `);
+          }
+        });
+
+        $("#catSummaryTotal").textContent = `${incomplete} total`;
+        $("#catSummaryList").innerHTML = Object.entries(byCat)
+          .sort((a,b) => b[1]-a[1])
+          .map(([cat,n]) => `
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+              <span class="text-truncate me-2 fs-6 fw-semibold">${escapeHtml(cat)}</span>
+              <span class="badge ${n === 0 ? "bg-light text-muted" : "bg-secondary-subtle text-dark"} fs-6 px-3 py-2">${n}</span>
+            </div>
+          `).join("");
+
+        setStats({ overdue, dueSoon, incomplete, inProgress, focusCount });
+        renderCalendar(taskEvents);
+
+      } catch (e) {
+        showError(e.message || "Failed to load data.");
+        setStats({ overdue: 0, dueSoon: 0, incomplete: 0, inProgress: 0, focusCount: 0 });
+        $("#catSummaryTotal").textContent = "0 total";
+        $("#catSummaryList").innerHTML = "";
+        $("#divCalendar").innerHTML = "";
+      }
+    }
+
+    $("#btnReload").addEventListener("click", loadDashboard);
+
+    $("#cardOverdue").addEventListener("click", () => { statFilter = "overdue"; setViewMode("all"); setPageTitle("Overdue Tasks"); loadDashboard(); });
+    $("#cardDueSoon").addEventListener("click", () => { statFilter = "dueSoon"; setViewMode("all"); setPageTitle("Upcoming Tasks"); loadDashboard(); });
+    $("#cardIncomplete").addEventListener("click", () => { statFilter = "incomplete"; setViewMode("all"); setPageTitle("Incomplete Tasks"); loadDashboard(); });
+    $("#cardInProgress").addEventListener("click", () => { statFilter = "inProgress"; setViewMode("all"); setPageTitle("In Progress Tasks"); loadDashboard(); });
+
+    $("#tblTasks").addEventListener("click", (ev) => {
+      const dot = ev.target.closest("[data-status-index]");
+      if (dot) {
+        const idx = Number(dot.getAttribute("data-status-index"));
+        if (!Number.isNaN(idx)) cycleTaskStatus(idx);
+        return;
+      }
+
+      const focus = ev.target.closest("[data-focus-index]");
+      if (focus) {
+        const idx = Number(focus.getAttribute("data-focus-index"));
+        if (!Number.isNaN(idx)) toggleTaskFocus(idx);
+      }
+    });
+
+    $("#newTaskFocusBtn").addEventListener("click", () => {
+      setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), !$("#newTaskFocus").checked);
+    });
+
+    document.getElementById("modalNewTask").addEventListener("show.bs.modal", async () => {
+      await loadCategoriesForModals();
+      setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), false);
+    });
+
+    $("#btnCreateTask").addEventListener("click", async () => {
+      clearError();
+
+      const payload = {
+        task_name: ($("#newTaskName").value || "").trim(),
+        category_name: $("#newTaskCategory").value,
+        description: $("#newTaskDesc").value || "",
+        due_date: $("#newTaskDue").value || null,
+        weight: Number($("#newTaskWeight").value),
+        todays_focus: $("#newTaskFocus").checked
+      };
+
+      if (!payload.task_name) { showError("Task name is required."); return; }
+      if (!payload.category_name) { showError("Category is required."); return; }
+      if (!payload.weight || Number.isNaN(payload.weight)) payload.weight = 3;
+
+      const res = await fetch(strBaseURL + "tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) { showError("Failed to create task."); return; }
+
+      bootstrap.Modal.getInstance(document.getElementById("modalNewTask")).hide();
+
+      $("#newTaskName").value = "";
+      $("#newTaskDesc").value = "";
+      $("#newTaskDue").value = "";
+      $("#newTaskWeight").value = "3";
+      setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), false);
+
+      loadDashboard();
+    });
+
+    setViewMode("dashboard");
+    setPageTitle("");
+    loadDashboard();
+</script>
+</body>
+</html>

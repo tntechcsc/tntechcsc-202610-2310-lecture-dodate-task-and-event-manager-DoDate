@@ -1,0 +1,243 @@
+{
+    "name": "Spring 2026 Planner",
+    "categories": [
+        {
+            "category_name": "Work",
+            "description": "Professional responsibilities and career-related tasks."
+        },
+        {
+            "category_name": "Personal",
+            "description": "Health, home, and personal errands."
+        },
+        {
+            "category_name": "Projects",
+            "description": "Side projects, hobbies, or long-term goals."
+        }
+    ],
+    "tasks": [
+        {
+            "task_name": "Submit monthly expense report",
+            "todays_focus": false,
+            "description": "Review receipts and submit reimbursement form.",
+            "due_date": "2026-02-22",
+            "status": "incomplete",
+            "weight": 3,
+            "steps": [
+                {
+                    "step": "Gather receipts",
+                    "status": "completed"
+                },
+                {
+                    "step": "Fill out form",
+                    "status": "incomplete"
+                }
+            ],
+            "category_name": "Work"
+        },
+        {
+            "task_name": "Update professional profile",
+            "todays_focus": true,
+            "description": "Refresh resume and online profile details.",
+            "due_date": "2026-02-20",
+            "status": "started",
+            "weight": 2,
+            "steps": [],
+            "category_name": "Work"
+        },
+        {
+            "task_name": "Deep clean kitchen",
+            "todays_focus": false,
+            "description": "Wipe cabinets, mop floors, and clean appliances.",
+            "due_date": "2026-02-28",
+            "status": "incomplete",
+            "weight": 2,
+            "steps": [],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Read one book",
+            "todays_focus": false,
+            "description": "Finish reading a personal development book.",
+            "due_date": "2026-03-05",
+            "status": "started",
+            "weight": 3,
+            "steps": [
+                {
+                    "step": "Read 5 chapters",
+                    "status": "started"
+                },
+                {
+                    "step": "Write short summary",
+                    "status": "incomplete"
+                }
+            ],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Prepare presentation slides",
+            "todays_focus": true,
+            "description": "Draft and refine slides for upcoming presentation.",
+            "due_date": "2026-03-10",
+            "status": "incomplete",
+            "weight": 4,
+            "steps": [],
+            "category_name": "Work"
+        },
+        {
+            "task_name": "Start fitness challenge",
+            "todays_focus": false,
+            "description": "Begin 30-day exercise challenge.",
+            "due_date": "2026-03-15",
+            "status": "incomplete",
+            "weight": 3,
+            "steps": [],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Implement new feature",
+            "todays_focus": false,
+            "description": "Develop and test new functionality in side project.",
+            "due_date": "2026-03-20",
+            "status": "started",
+            "weight": 5,
+            "steps": [
+                {
+                    "step": "Design feature",
+                    "status": "completed"
+                },
+                {
+                    "step": "Write implementation",
+                    "status": "started"
+                },
+                {
+                    "step": "Test changes",
+                    "status": "incomplete"
+                }
+            ],
+            "category_name": "Projects"
+        },
+        {
+            "task_name": "Organize digital files",
+            "todays_focus": false,
+            "description": "Clean up desktop and archive old documents.",
+            "due_date": "2026-03-25",
+            "status": "incomplete",
+            "weight": 2,
+            "steps": [],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Quarterly goal review",
+            "todays_focus": true,
+            "description": "Assess progress toward quarterly goals.",
+            "due_date": "2026-03-30",
+            "status": "incomplete",
+            "weight": 4,
+            "steps": [],
+            "category_name": "Work"
+        },
+        {
+            "task_name": "Plan weekend trip",
+            "todays_focus": false,
+            "description": "Research destinations and book accommodations.",
+            "due_date": "2026-04-05",
+            "status": "started",
+            "weight": 2,
+            "steps": [
+                {
+                    "step": "Choose destination",
+                    "status": "completed"
+                },
+                {
+                    "step": "Book lodging",
+                    "status": "incomplete"
+                }
+            ],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Refactor project structure",
+            "todays_focus": false,
+            "description": "Improve organization and readability of codebase.",
+            "due_date": "2026-04-10",
+            "status": "incomplete",
+            "weight": 5,
+            "steps": [],
+            "category_name": "Projects"
+        },
+        {
+            "task_name": "Schedule annual checkup",
+            "todays_focus": false,
+            "description": "Call clinic and book appointment.",
+            "due_date": "2026-04-15",
+            "status": "incomplete",
+            "weight": 1,
+            "steps": [],
+            "category_name": "Personal"
+        },
+        {
+            "task_name": "Complete training module",
+            "todays_focus": true,
+            "description": "Finish required online professional development course.",
+            "due_date": "2026-04-18",
+            "status": "started",
+            "weight": 3,
+            "steps": [],
+            "category_name": "Work"
+        },
+        {
+            "task_name": "Finalize spring project milestone",
+            "todays_focus": false,
+            "description": "Wrap up milestone and prepare documentation.",
+            "due_date": "2026-04-22",
+            "status": "incomplete",
+            "weight": 5,
+            "steps": [],
+            "category_name": "Projects"
+        },
+        {
+            "task_name": "Budget review",
+            "todays_focus": true,
+            "description": "Review spending and adjust savings goals.",
+            "due_date": "2026-04-30",
+            "status": "incomplete",
+            "weight": 3,
+            "steps": [],
+            "category_name": "Personal"
+        }
+    ],
+    "events": [
+        {
+            "event_name": "Team stand-up",
+            "description": "Weekly progress meeting.",
+            "date": "2026-02-23",
+            "start_time": "09:00",
+            "end_time": "09:30",
+            "category_name": "Work"
+        },
+        {
+            "event_name": "Networking event",
+            "description": "Local professional meetup.",
+            "date": "2026-03-12",
+            "start_time": "18:00",
+            "end_time": "20:00",
+            "category_name": "Work"
+        },
+        {
+            "event_name": "Family gathering",
+            "description": "Dinner with family.",
+            "date": "2026-03-28",
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "category_name": "Personal"
+        },
+        {
+            "event_name": "Project demo day",
+            "description": "Present progress on side project.",
+            "date": "2026-04-20",
+            "start_time": "14:00",
+            "end_time": "15:30",
+            "category_name": "Projects"
+        }
+    ]
+}
