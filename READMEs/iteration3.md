@@ -3,7 +3,7 @@
 
 ---
 
-## Important Notice
+## Warning
 
 **Do not modify `application_controller.py` or `index.html` unless you have received explicit permission from Cal.(not the TAs, not Brandon, not your congressman, not the Cal imposter that haunts your dreams)**
 
@@ -12,6 +12,13 @@ Unauthorized changes to either file will result in a grade of **zero for the ent
 These files provide the structural foundation for the API and front-end interface. Altering them without approval can break system functionality and invalidate grading.
 
 ---
+
+## Installing libraries
+This project uses some libraries that are not included in Python. You will need to install the libraries with the following commands:
+```
+pip3 install "fastapi[standard]"
+```
+**If you are using a Windows machine you will need to use "pip" instead of "pip3".**
 
 ## Description
 
@@ -100,6 +107,13 @@ While this functionality would typically be included elsewhere (in the main clas
 - **save_planner:** Converts the Planner object to dictionary form and writes it to a JSON file for persistent storage.  
 
 ---
+
+## Running your Program
+Once you are ready to run your program, you can run the application_controller.py file by clicking the run button on your IDE while the file is open or using the following command:
+```
+python3 application_controller.py
+```
+**If you are on a Windows machine you will need to use "python" instead of "python3".**
 
 ## Submission Instructions
 
