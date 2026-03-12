@@ -202,9 +202,9 @@ def create_task(payload: NewTask):
         raise HTTPException(status_code=400, detail="Category does not exist")
 
     planner.create_task(
-        name=payload.task_name,
+        task_name=payload.task_name,
         todays_focus=payload.todays_focus,
-        desc=payload.description or "",
+        description=payload.description or "",
         due_date=payload.due_date,
         status="incomplete",
         weight=int(payload.weight),

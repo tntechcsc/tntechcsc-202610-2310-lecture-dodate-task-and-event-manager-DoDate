@@ -115,6 +115,17 @@ python3 application_controller.py
 ```
 **If you are on a Windows machine you will need to use "python" instead of "python3".**
 
+Once your code is running with no errors, you will see the following output:
+```
+INFO:     Will watch for changes in these directories: ['/Users/castewart/Desktop/Iteration3']
+INFO:     Uvicorn running on **http://127.0.0.1:8000** (Press CTRL+C to quit)
+INFO:     Started reloader process [9345] using WatchFiles
+INFO:     Started server process [9356]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+Open http://127.0.0.1:8000 on your browser or click on the link in your terminal. This will open DoDate in a webpage. You can test your code by making sure the data appears and the create task button successfully adds a task.
+
 ## Submission Instructions
 
 Open a terminal and ensure you are inside the repository directory before running any Git commands.
