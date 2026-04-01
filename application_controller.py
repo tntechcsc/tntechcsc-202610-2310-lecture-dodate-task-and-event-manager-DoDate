@@ -202,13 +202,13 @@ def create_task(payload: NewTask):
         raise HTTPException(status_code=400, detail="Category does not exist")
 
     planner.create_task(
-        task_name=payload.task_name,
-        todays_focus=payload.todays_focus,
-        description=payload.description or "",
-        due_date=payload.due_date,
-        status="incomplete",
-        weight=int(payload.weight),
-        category_name=payload.category_name,
+        payload.task_name,
+        payload.todays_focus,
+        payload.description or "",
+        payload.due_date,
+        "incomplete",
+        int(payload.weight),
+        payload.category_name,
     )
     save()
     return planner.get_tasks()[-1].to_dict()
@@ -224,11 +224,11 @@ def patch_task(task_index: int, payload: EditTaskPayload):
                 raise HTTPException(status_code=400, detail="Category does not exist")
 
         task.update_task(
-            name=payload.task_name,
-            todays_focus=payload.todays_focus,
-            desc=payload.description,
-            due_date=payload.due_date,
-            weight=payload.weight,
+            payload.task_name,
+            payload.todays_focus,
+            payload.description,
+            payload.due_date,
+            payload.weight,
         )
 
         if payload.category_name is not None:
@@ -314,17 +314,7 @@ def delete_step(task_index: int, step_index: int):
 # -------------------------
 @app.get("/events")
 def get_events():
-    return [
-        {
-            "name": e.get_event_name(),
-            "category": e.get_category_name(),
-            "date": e.get_date(),
-            "start": e.get_start_time(),
-            "end": e.get_end_time(),
-            "desc": e.get_description(),
-        }
-        for e in planner.get_events()
-    ]
+    return [e.to_dict() for e in planner.get_events()]
 
 @app.post("/events")
 def create_event(payload: NewEvent):
@@ -332,12 +322,12 @@ def create_event(payload: NewEvent):
         raise HTTPException(status_code=400, detail="Category does not exist")
 
     planner.add_event(
-        name=payload.name,
-        desc=payload.desc or "",
-        date=payload.date,
-        start=payload.start or "",
-        end=payload.end or "",
-        cat_name=payload.category,
+        payload.name,
+        payload.desc or "",
+        payload.date,
+        payload.start or "",
+        payload.end or "",
+        payload.category,
     )
     save()
 
