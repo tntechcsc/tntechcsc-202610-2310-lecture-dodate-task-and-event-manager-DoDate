@@ -43,6 +43,7 @@
       padding:.15rem 0;
     }
     .step-status {
+      cursor:pointer;
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -78,6 +79,14 @@
             <i class="bi bi-plus-lg me-1"></i>Task
           </button>
 
+          <button class="btn btn-light btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalNewEvent">
+            <i class="bi bi-plus-lg me-1"></i>Event
+          </button>
+
+          <button class="btn btn-light btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalCategories">
+            <i class="bi bi-tags me-1"></i>Categories
+          </button>
+
           <button class="btn btn-outline-light btn-sm" type="button" id="btnReload">
             <i class="bi bi-arrow-clockwise me-1"></i>Reload
           </button>
@@ -89,7 +98,56 @@
   <div class="container-xl py-3">
     <div id="divError" class="alert alert-danger d-none" role="alert"></div>
 
-    <!-- Stat Cards REMOVED -->
+    <!-- Stat Cards -->
+    <div class="row g-3 mt-1" id="secDashboard">
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 bg-danger text-white rounded-3 h-100 stat-card" id="cardOverdue" style="cursor:pointer;">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Overdue</div>
+              <div class="display-5 lh-1" id="statOverdue">0</div>
+            </div>
+            <i class="bi bi-exclamation-triangle-fill fs-1 opacity-75"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 bg-warning rounded-3 h-100 stat-card" id="cardDueSoon" style="cursor:pointer;">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Upcoming Tasks and Events</div>
+              <div class="display-5 lh-1" id="statDueSoon">0</div>
+            </div>
+            <i class="bi bi-calendar2-week-fill fs-1 opacity-75"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 bg-secondary text-white rounded-3 h-100 stat-card" id="cardIncomplete" style="cursor:pointer;">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Incomplete</div>
+              <div class="display-5 lh-1" id="statIncomplete">0</div>
+            </div>
+            <i class="bi bi-x-circle-fill fs-1 opacity-75"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 bg-success text-white rounded-3 h-100 stat-card" id="cardInProgress" style="cursor:pointer;">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">In Progress</div>
+              <div class="display-5 lh-1" id="statInProgress">0</div>
+            </div>
+            <i class="bi bi-play-circle-fill fs-1 opacity-75"></i>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="secCalendarFocus">
       <div class="row g-3 mt-1 align-items-stretch">
@@ -107,9 +165,20 @@
           </div>
         </div>
 
-        <!-- RIGHT: Today’s Focus only (Incomplete by Category REMOVED) -->
+        <!-- RIGHT: Summary (top) + Focus (bottom) -->
         <div class="col-12 col-lg-5">
           <div class="d-flex flex-column gap-3 h-100">
+
+            <!-- Incomplete by Category -->
+            <div class="card shadow-sm border-0 rounded-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h5 class="m-0"><i class="bi bi-tags me-2 text-primary"></i>Incomplete by Category</h5>
+                  <span class="text-muted small" id="catSummaryTotal">0</span>
+                </div>
+                <div id="catSummaryList" class="small"></div>
+              </div>
+            </div>
 
             <!-- Today’s Focus -->
             <div class="card shadow-sm border-0 rounded-3 flex-grow-1">
@@ -141,6 +210,7 @@
 
       </div>
     </div>
+
 
     <div id="secLists">
       <h4 class="mt-3 mb-2 d-none" id="pageTitle"></h4>
@@ -176,7 +246,7 @@
         </div>
       </div>
 
-      <!-- Events (READ ONLY) -->
+      <!-- Events -->
       <div class="card shadow-sm border-0 rounded-3 mt-3">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between mb-2">
@@ -202,7 +272,7 @@
 
   </div>
 
-  <!-- New Task Modal (kept) -->
+  <!-- New Task Modal -->
   <div class="modal fade" id="modalNewTask" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
@@ -263,7 +333,214 @@
     </div>
   </div>
 
-  <!-- Event/New Event/Edit Task/Edit Event/Categories modals REMOVED -->
+  <!-- New Event Modal -->
+  <div class="modal fade" id="modalNewEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>New Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-7">
+              <label class="form-label">Event Name</label>
+              <input class="form-control" id="newEventName">
+            </div>
+
+            <div class="col-12 col-md-5">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="newEventCategory"></select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="newEventDesc" rows="3"></textarea>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Date</label>
+              <input class="form-control" id="newEventDate" type="date">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Start</label>
+              <input class="form-control" id="newEventStart" type="time">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">End</label>
+              <input class="form-control" id="newEventEnd" type="time">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" id="btnCreateEvent">Create Event</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div class="modal fade" id="modalEditTask" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editTaskIndex">
+
+          <div class="row g-3">
+            <div class="col-12 col-md-7">
+              <label class="form-label">Task Name</label>
+              <input class="form-control" id="editTaskName">
+            </div>
+
+            <div class="col-12 col-md-5">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="editTaskCategory"></select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="editTaskDesc" rows="3"></textarea>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Due Date</label>
+              <input class="form-control" id="editTaskDue" type="date">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Size</label>
+              <select class="form-select" id="editTaskWeight">
+                <option value="1">1 (Tiny)</option>
+                <option value="2">2 (Small)</option>
+                <option value="3">3 (Medium)</option>
+                <option value="4">4 (Large)</option>
+                <option value="5">5 (Huge)</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-4 d-flex align-items-end">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input d-none" type="checkbox" id="editTaskFocus">
+                <span class="focus-btn" id="editTaskFocusBtn" role="button" title="Toggle Today’s Focus">
+                  <i class="bi bi-brightness-high"></i>
+                </span>
+                <span class="small">Today’s Focus</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" id="btnSaveTaskEdits">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Event Modal -->
+  <div class="modal fade" id="modalEditEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editEventIndex">
+
+          <div class="row g-3">
+            <div class="col-12 col-md-7">
+              <label class="form-label">Event Name</label>
+              <input class="form-control" id="editEventName">
+            </div>
+
+            <div class="col-12 col-md-5">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="editEventCategory"></select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="editEventDesc" rows="3"></textarea>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Date</label>
+              <input class="form-control" id="editEventDate" type="date">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">Start</label>
+              <input class="form-control" id="editEventStart" type="time">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">End</label>
+              <input class="form-control" id="editEventEnd" type="time">
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" id="btnSaveEventEdits">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Modal -->
+  <div class="modal fade" id="modalCategories" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-tags me-2"></i>Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-md-4">
+              <input class="form-control" id="catNewName" placeholder="New category name">
+            </div>
+            <div class="col-12 col-md-6">
+              <input class="form-control" id="catNewDesc" placeholder="Description">
+            </div>
+            <div class="col-12 col-md-2 d-grid">
+              <button class="btn btn-primary" id="btnCatCreate">
+                <i class="bi bi-plus-lg me-1"></i>Add
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:30%">Name</th>
+                  <th>Description</th>
+                  <th style="width:160px;"></th>
+                </tr>
+              </thead>
+              <tbody id="tblCatsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
@@ -271,576 +548,1192 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
 
   <script>
-  const strBaseURL = "/";
+    const strBaseURL = "/";
+    const today = new Date();
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-  function $(sel) { return document.querySelector(sel); }
+    function $(sel) { return document.querySelector(sel); }
 
-  let cacheTasks = [];
-  let cacheEvents = [];
-  let cacheCategories = [];
+    // caches (so expanded edit buttons can fill modals)
+    let cacheTasks = [];
+    let cacheEvents = [];
+    let cacheCategories = [];
 
-  let currentCategory = null;
-  let viewMode = "dashboard";
-  let statFilter = null;
+    let currentCategory = null;
+    let viewMode = "dashboard";
+    let statFilter = null;
 
-  function escapeHtml(s) {
-    return (s ?? "").toString()
-      .replaceAll("&","&amp;").replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function setViewMode(mode) {
-    viewMode = mode;
-
-    // stat cards removed, so only hide/show calendar+focus on dashboard
-    const showDashboardWidgets = (mode === "dashboard");
-    $("#secCalendarFocus").classList.toggle("d-none", !showDashboardWidgets);
-    $("#secLists").classList.remove("d-none");
-  }
-
-  function setPageTitle(text) {
-    const el = $("#pageTitle");
-    if (!text) { el.textContent=""; el.classList.add("d-none"); return; }
-    el.textContent = text;
-    el.classList.remove("d-none");
-  }
-
-  function showError(msg) {
-    const div = $("#divError");
-    div.textContent = msg;
-    div.classList.remove("d-none");
-  }
-
-  function clearError() {
-    $("#divError").classList.add("d-none");
-    $("#divError").textContent = "";
-  }
-
-  function clearTables() {
-    $("#tblTasks tbody").innerHTML = "";
-    $("#tblFocus tbody").innerHTML = "";
-    $("#tblEvents tbody").innerHTML = "";
-  }
-
-  function parseDateOnly(dateStr) {
-    if (!dateStr) return null;
-    let s = String(dateStr).trim();
-    if (!s) return null;
-
-    const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if (m) {
-      const y = m[1];
-      const mo = m[2].padStart(2, "0");
-      const d = m[3].padStart(2, "0");
-      s = `${y}-${mo}-${d}`;
+    function escapeHtml(s) {
+      return (s ?? "").toString()
+        .replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    s = s.replace(" ", "T");
-
-    let d1 = new Date(s.length === 10 ? (s + "T00:00:00") : s);
-    if (!Number.isNaN(d1.getTime())) {
-      return new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+    function setViewMode(mode) {
+      viewMode = mode;
+      const showDashboardWidgets = (mode === "dashboard");
+      $("#secDashboard").classList.toggle("d-none", !showDashboardWidgets);
+      $("#secCalendarFocus").classList.toggle("d-none", !showDashboardWidgets);
+      $("#secLists").classList.remove("d-none");
     }
 
-    const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-    if (m2) {
-      const mo = Number(m2[1]) - 1;
-      const day = Number(m2[2]);
-      const yr = Number(m2[3]);
-      const d2 = new Date(yr, mo, day);
-      return Number.isNaN(d2.getTime()) ? null : d2;
+    function setPageTitle(text) {
+      const el = $("#pageTitle");
+      if (!text) { el.textContent=""; el.classList.add("d-none"); return; }
+      el.textContent = text;
+      el.classList.remove("d-none");
     }
 
-    return null;
-  }
-
-  // Steps DISPLAY ONLY (no buttons, no API calls)
-  function renderStepsHtml(steps) {
-    const list = Array.isArray(steps) ? steps : [];
-    if (list.length === 0) return `<div class="small-muted">No steps yet.</div>`;
-
-    return list.map((st) => {
-      const status = (st.status ?? "incomplete").toLowerCase();
-
-      let cls = "step-status";
-      let icon = "bi-circle";
-      let textCls = "step-text";
-
-      if (status === "started") { cls += " started"; icon = "bi-circle-half"; }
-      if (status === "completed") { cls += " completed"; icon = "bi-check-lg"; textCls += " completed"; }
-
-      return `
-        <div class="step-item">
-          <span class="${cls}" title="${escapeHtml(status)}">
-            <i class="bi ${icon}"></i>
-          </span>
-          <span class="${textCls}">${escapeHtml(st.step ?? "")}</span>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function addTaskRow(task, tableId, taskIndex = null) {
-    const isMain = (tableId === "#tblTasks");
-    let row = "<tr>";
-
-    if (isMain) {
-      const status = (task.status ?? "").toLowerCase();
-      let className = "progress-btn";
-      if (status === "started" || status === "in progress") className += " started";
-      if (status === "completed") className += " completed";
-
-      row += `
-        <td class="text-center">
-          <span class="${className}" data-index="${taskIndex}" title="Cycle status"></span>
-        </td>
-      `;
+    function showError(msg) {
+      const div = $("#divError");
+      div.textContent = msg;
+      div.classList.remove("d-none");
     }
 
-    if (isMain) {
+    function clearError() {
+      $("#divError").classList.add("d-none");
+      $("#divError").textContent = "";
+    }
+
+    function clearTables() {
+      $("#tblTasks tbody").innerHTML = "";
+      $("#tblFocus tbody").innerHTML = "";
+      $("#tblEvents tbody").innerHTML = "";
+    }
+
+    function parseDateOnly(dateStr) {
+      if (!dateStr) return null;
+
+      let s = String(dateStr).trim();
+      if (!s) return null;
+
+      // If it looks like YYYY-M-D, normalize to YYYY-MM-DD
+      const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (m) {
+        const y = m[1];
+        const mo = m[2].padStart(2, "0");
+        const d = m[3].padStart(2, "0");
+        s = `${y}-${mo}-${d}`;
+      }
+
+      // If it includes a space time (e.g., "2026-02-08 00:00:00"), make it ISO-ish
+      s = s.replace(" ", "T");
+
+      // Try ISO date first at midnight local
+      let d1 = new Date(s.length === 10 ? (s + "T00:00:00") : s);
+      if (!Number.isNaN(d1.getTime())) {
+        return new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+      }
+
+      // Try MM/DD/YYYY as a fallback
+      const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m2) {
+        const mo = Number(m2[1]) - 1;
+        const day = Number(m2[2]);
+        const yr = Number(m2[3]);
+        const d2 = new Date(yr, mo, day);
+        return Number.isNaN(d2.getTime()) ? null : d2;
+      }
+
+      return null;
+    }
+
+
+    function renderStepsHtml(steps, taskIndex) {
+      const list = Array.isArray(steps) ? steps : [];
+      if (list.length === 0) return `<div class="small-muted">No steps yet.</div>`;
+
+      return list.map((st, i) => {
+        const status = (st.status ?? "incomplete").toLowerCase();
+
+        let cls = "step-status";
+        let icon = "bi-circle";
+        let textCls = "step-text";
+
+        if (status === "started") { cls += " started"; icon = "bi-circle-half"; }
+        if (status === "completed") { cls += " completed"; icon = "bi-check-lg"; textCls += " completed"; }
+
+        return `
+          <div class="step-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="${cls} step-toggle"
+                    data-task-index="${taskIndex}"
+                    data-step-index="${i}"
+                    title="Cycle step status">
+                <i class="bi ${icon}"></i>
+              </span>
+              <span class="${textCls}">${escapeHtml(st.step ?? "")}</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-muted step-edit"
+                    role="button"
+                    data-task-index="${taskIndex}"
+                    data-step-index="${i}"
+                    title="Edit step">
+                <i class="bi bi-pencil"></i>
+              </span>
+
+              <span class="text-muted step-delete"
+                    role="button"
+                    data-task-index="${taskIndex}"
+                    data-step-index="${i}"
+                    title="Delete step">
+                <i class="bi bi-trash"></i>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function editStepText(taskIndex, stepIndex) {
+      const task = cacheTasks.find(t => t._index === taskIndex);
+      if (!task) return;
+
+      const step = task.steps?.[stepIndex];
+      if (!step) return;
+
+      const wrap = document.querySelector(`#stepsWrap_${taskIndex}`);
+
+      wrap.innerHTML = task.steps.map((st, i) => {
+        if (i !== stepIndex) {
+          return `
+            <div class="step-item d-flex justify-content-between align-items-center">
+              <div>${escapeHtml(st.step)}</div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="input-group input-group-sm">
+            <input class="form-control"
+                  id="editInline_${taskIndex}_${stepIndex}"
+                  value="${escapeHtml(st.step)}">
+            <button class="btn btn-primary"
+                    onclick="saveInlineStep(${taskIndex}, ${stepIndex})">
+              Save
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function saveInlineStep(taskIndex, stepIndex) {
+      const input = document.getElementById(`editInline_${taskIndex}_${stepIndex}`);
+      const text = (input.value || "").trim();
+      if (!text) return;
+
+      const res = await fetch(strBaseURL + `tasks/${taskIndex}/steps/${stepIndex}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+
+      if (!res.ok) return;
+
+      const updated = await res.json();
+      document.querySelector(`#stepsWrap_${taskIndex}`).innerHTML =
+        renderStepsHtml(updated.steps, taskIndex);
+    }
+
+    async function deleteStep(taskIndex, stepIndex) {
+      clearError();
+      if (!confirm("Delete this step?")) return;
+
+      try {
+        const res = await fetch(strBaseURL + `tasks/${taskIndex}/steps/${stepIndex}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Failed to delete step");
+
+        const updated = await res.json();
+        document.querySelector(`#stepsWrap_${taskIndex}`).innerHTML = renderStepsHtml(updated.steps, taskIndex);
+      } catch (err) {
+        showError(err.message || "Delete step error");
+      }
+    }
+
+
+
+    function addTaskRow(task, tableId, taskIndex = null) {
+      const isMain = (tableId === "#tblTasks");
+      let row = "<tr>";
+
+      if (isMain) {
+        const status = (task.status ?? "").toLowerCase();
+        let className = "progress-btn";
+        if (status === "started" || status === "in progress") className += " started";
+        if (status === "completed") className += " completed";
+
+        row += `
+          <td class="text-center">
+            <span class="${className}" data-index="${taskIndex}" title="Cycle status"></span>
+          </td>
+        `;
+      }
+
+      if (isMain) {
+        row += `
+          <td class="text-wrap">
+            <a href="#"
+               class="text-decoration-none"
+               data-bs-toggle="collapse"
+               data-bs-target="#taskDetails_${taskIndex}"
+               aria-expanded="false">
+              ${escapeHtml(task.task_name ?? "")}
+            </a>
+          </td>
+        `;
+      } else {
+        row += `<td class="text-wrap">${escapeHtml(task.task_name ?? "")}</td>`;
+      }
+
+      row += `<td class="text-wrap">${escapeHtml(task.category_name ?? "")}</td>`;
+
+      if (isMain) {
+        const isFocus = !!task.todays_focus;
+        const focusClass = isFocus ? "focus-btn active" : "focus-btn";
+        const iconClass = isFocus ? "bi-brightness-high-fill" : "bi-brightness-high";
+
+        row += `
+          <td class="text-center">
+            <span class="${focusClass}" data-index="${taskIndex}" title="Toggle Today's Focus">
+              <i class="bi ${iconClass}"></i>
+            </span>
+          </td>
+        `;
+      }
+
+      const statusLower = (task.status ?? "").toLowerCase();
+      const dueDate = parseDateOnly(task.due_date);
+      const overdueBadge =
+        (dueDate && dueDate < todayDateOnly && statusLower !== "completed")
+          ? ' <span class="badge bg-danger ms-2">Overdue</span>'
+          : '';
+
+      row += `<td>${escapeHtml(task.due_date ?? "")}${isMain ? overdueBadge : ""}</td>`;
+      row += `<td>${escapeHtml(task.weight ?? "")}</td>`;
+      row += "</tr>";
+
+      $(tableId + " tbody").innerHTML += row;
+
+      if (isMain) {
+        const detailsRow = `
+          <tr class="task-details">
+            <td colspan="6" class="p-0 border-0">
+              <div class="collapse" id="taskDetails_${taskIndex}">
+                <div class="p-3 border-top">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="fw-semibold">Details</div>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-primary btn-task-edit" data-task-index="${taskIndex}">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger btn-task-delete" data-task-index="${taskIndex}">
+                        <i class="bi bi-trash me-1"></i>Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="fw-semibold">Description</div>
+                    <div class="small-muted">${escapeHtml(task.description ?? "") || "—"}</div>
+                  </div>
+
+                  <div class="mb-2">
+                    <div class="fw-semibold d-flex align-items-center justify-content-between">
+                      <span>Steps</span>
+                      <button class="btn btn-sm btn-outline-primary add-step-btn"
+                              data-task-index="${taskIndex}">
+                        <i class="bi bi-plus-lg me-1"></i>Add
+                      </button>
+                    </div>
+
+                    <div class="mt-2" id="stepsWrap_${taskIndex}">
+                      ${renderStepsHtml(task.steps, taskIndex)}
+                    </div>
+
+                    <div class="mt-2 d-none" id="addStepWrap_${taskIndex}">
+                      <div class="input-group input-group-sm">
+                        <input class="form-control" id="newStepText_${taskIndex}" placeholder="New step...">
+                        <button class="btn btn-primary btn-save-step" data-task-index="${taskIndex}">
+                          Save
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+        $("#tblTasks tbody").innerHTML += detailsRow;
+      }
+    }
+
+    function addEventRow(event, eventIndex) {
+      let row = "<tr>";
+
       row += `
         <td class="text-wrap">
           <a href="#"
              class="text-decoration-none"
              data-bs-toggle="collapse"
-             data-bs-target="#taskDetails_${taskIndex}"
+             data-bs-target="#eventDetails_${eventIndex}"
              aria-expanded="false">
-            ${escapeHtml(task.task_name ?? "")}
+            ${escapeHtml(event.name ?? "")}
           </a>
         </td>
       `;
-    } else {
-      row += `<td class="text-wrap">${escapeHtml(task.task_name ?? "")}</td>`;
-    }
+      row += `<td>${escapeHtml(event.category ?? "")}</td>`;
+      row += `<td><i class="bi bi-calendar-event me-2 text-primary"></i>${escapeHtml(event.date ?? "")} <i class="bi bi-clock ms-3 me-2 text-primary"></i>${escapeHtml(event.start ?? "")}-${escapeHtml(event.end ?? "")}</td>`;
+      row += `<td>${escapeHtml(event.desc ?? "")}</td>`;
+      row += "</tr>";
 
-    row += `<td class="text-wrap">${escapeHtml(task.category_name ?? "")}</td>`;
+      $("#tblEvents tbody").innerHTML += row;
 
-    if (isMain) {
-      const isFocus = !!task.todays_focus;
-      const focusClass = isFocus ? "focus-btn active" : "focus-btn";
-      const iconClass = isFocus ? "bi-brightness-high-fill" : "bi-brightness-high";
-
-      row += `
-        <td class="text-center">
-          <span class="${focusClass}" data-index="${taskIndex}" title="Toggle Today's Focus">
-            <i class="bi ${iconClass}"></i>
-          </span>
-        </td>
-      `;
-    }
-
-    row += `<td>${escapeHtml(task.due_date ?? "")}</td>`;
-    row += `<td>${escapeHtml(task.weight ?? "")}</td>`;
-    row += "</tr>";
-
-    $(tableId + " tbody").innerHTML += row;
-
-    if (isMain) {
       const detailsRow = `
         <tr class="task-details">
-          <td colspan="6" class="p-0 border-0">
-            <div class="collapse" id="taskDetails_${taskIndex}">
+          <td colspan="4" class="p-0 border-0">
+            <div class="collapse" id="eventDetails_${eventIndex}">
               <div class="p-3 border-top">
-                <div class="mb-3">
-                  <div class="fw-semibold">Description</div>
-                  <div class="small-muted">${escapeHtml(task.description ?? "") || "—"}</div>
-                </div>
-
-                <div class="mb-2">
-                  <div class="fw-semibold">Steps</div>
-                  <div class="mt-2" id="stepsWrap_${taskIndex}">
-                    ${renderStepsHtml(task.steps)}
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="fw-semibold">Details</div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary btn-event-edit" data-event-index="${eventIndex}">
+                      <i class="bi bi-pencil me-1"></i>Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger btn-event-delete" data-event-index="${eventIndex}">
+                      <i class="bi bi-trash me-1"></i>Delete
+                    </button>
                   </div>
                 </div>
 
+                <div class="mb-2">
+                  <div class="fw-semibold">Description</div>
+                  <div class="small-muted">${escapeHtml(event.desc ?? "") || "—"}</div>
+                </div>
+
+                <div class="small-muted">
+                  <i class="bi bi-calendar3 me-2"></i>${escapeHtml(event.date ?? "")}
+                  <span class="ms-3"><i class="bi bi-clock me-2"></i>${escapeHtml(event.start ?? "")} - ${escapeHtml(event.end ?? "")}</span>
+                  <span class="ms-3"><i class="bi bi-tag me-2"></i>${escapeHtml(event.category ?? "")}</span>
+                </div>
               </div>
             </div>
           </td>
         </tr>
       `;
-      $("#tblTasks tbody").innerHTML += detailsRow;
-    }
-  }
-
-  // Events are READ ONLY (no expand/edit/delete buttons)
-  // FIXED: use backend keys (event_name, category_name, start_time, end_time, description)
-  function addEventRow(event, eventIndex) {
-    let row = "<tr>";
-    row += `<td class="text-wrap">${escapeHtml(event.event_name ?? "")}</td>`;
-    row += `<td>${escapeHtml(event.category_name ?? "")}</td>`;
-    row += `<td><i class="bi bi-calendar-event me-2 text-primary"></i>${escapeHtml(event.date ?? "")} <i class="bi bi-clock ms-3 me-2 text-primary"></i>${escapeHtml(event.start_time ?? "")}-${escapeHtml(event.end_time ?? "")}</td>`;
-    row += `<td>${escapeHtml(event.description ?? "")}</td>`;
-    row += "</tr>";
-    $("#tblEvents tbody").innerHTML += row;
-  }
-
-  async function cycleTaskStatus(taskIndex, dotEl) {
-    clearError();
-    dotEl.style.pointerEvents = "none";
-    dotEl.style.opacity = "0.6";
-
-    try {
-      const res = await fetch(strBaseURL + `tasks/${taskIndex}/status`, { method: "PATCH" });
-      if (!res.ok) throw new Error("Failed to update task status");
-
-      let newStatus = null;
-      try { newStatus = (await res.json()).status?.toLowerCase(); } catch {}
-
-      dotEl.classList.remove("started", "completed");
-      if (newStatus === "started" || newStatus === "in progress") dotEl.classList.add("started");
-      if (newStatus === "completed") dotEl.classList.add("completed");
-
-      await loadDashboard();
-    } catch (err) {
-      showError(err.message || "Update error");
-    } finally {
-      dotEl.style.pointerEvents = "";
-      dotEl.style.opacity = "";
-    }
-  }
-
-  async function toggleTaskFocus(taskIndex, el) {
-    clearError();
-    el.style.pointerEvents = "none";
-    el.style.opacity = "0.6";
-
-    try {
-      const res = await fetch(strBaseURL + `tasks/${taskIndex}/focus`, { method: "PATCH" });
-      if (!res.ok) throw new Error("Failed to update focus");
-
-      const data = await res.json();
-      const isFocus = !!data.todays_focus;
-
-      el.classList.toggle("active", isFocus);
-      const icon = el.querySelector("i");
-      icon.classList.remove("bi-brightness-high", "bi-brightness-high-fill");
-      icon.classList.add(isFocus ? "bi-brightness-high-fill" : "bi-brightness-high");
-
-      await loadDashboard();
-    } catch (err) {
-      showError(err.message || "Focus update error");
-    } finally {
-      el.style.pointerEvents = "";
-      el.style.opacity = "";
-    }
-  }
-
-  function fillCategorySelect(selectEl, categories) {
-    selectEl.innerHTML = "";
-    categories.forEach(c => {
-      const name = c.category_name ?? "";
-      if (!name.trim()) return;
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      selectEl.appendChild(opt);
-    });
-  }
-
-  async function loadCategoriesForModals() {
-    try {
-      const res = await fetch(strBaseURL + "categories");
-      if (!res.ok) return;
-      cacheCategories = await res.json();
-      fillCategorySelect($("#newTaskCategory"), cacheCategories);
-    } catch {}
-  }
-
-  function setSunToggle(btnEl, checkboxEl, isOn) {
-    btnEl.classList.toggle("active", isOn);
-    const icon = btnEl.querySelector("i");
-    icon.classList.remove("bi-brightness-high", "bi-brightness-high-fill");
-    icon.classList.add(isOn ? "bi-brightness-high-fill" : "bi-brightness-high");
-    checkboxEl.checked = isOn;
-  }
-
-  // New Task sun toggle
-  $("#newTaskFocusBtn").addEventListener("click", () => {
-    setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), !$("#newTaskFocus").checked);
-  });
-
-  // Task table click handling (ONLY status + focus)
-  $("#tblTasks").addEventListener("click", (ev) => {
-    const dot = ev.target.closest(".progress-btn");
-    if (dot) {
-      const idx = Number(dot.getAttribute("data-index"));
-      if (!Number.isNaN(idx)) cycleTaskStatus(idx, dot);
-      return;
+      $("#tblEvents tbody").innerHTML += detailsRow;
     }
 
-    const focusBtn = ev.target.closest(".focus-btn");
-    if (focusBtn && focusBtn.hasAttribute("data-index")) {
-      const idx = Number(focusBtn.getAttribute("data-index"));
-      if (!Number.isNaN(idx)) toggleTaskFocus(idx, focusBtn);
-      return;
+    async function cycleTaskStatus(taskIndex, dotEl) {
+      clearError();
+      dotEl.style.pointerEvents = "none";
+      dotEl.style.opacity = "0.6";
+
+      try {
+        const res = await fetch(strBaseURL + `tasks/${taskIndex}/status`, { method: "PATCH" });
+        if (!res.ok) throw new Error("Failed to update task status");
+
+        let newStatus = null;
+        try { newStatus = (await res.json()).status?.toLowerCase(); } catch {}
+        dotEl.classList.remove("started", "completed");
+        if (newStatus === "started" || newStatus === "in progress") dotEl.classList.add("started");
+        if (newStatus === "completed") dotEl.classList.add("completed");
+
+        await loadDashboard();
+      } catch (err) {
+        showError(err.message || "Update error");
+      } finally {
+        dotEl.style.pointerEvents = "";
+        dotEl.style.opacity = "";
+      }
     }
-  });
 
-  function setStats({ focusCount }) {
-    $("#badgeFocusCount").textContent = focusCount;
-  }
+    async function toggleTaskFocus(taskIndex, el) {
+      clearError();
+      el.style.pointerEvents = "none";
+      el.style.opacity = "0.6";
 
-  function renderCalendar(taskEvents, eventEvents) {
-    const calendarEl = $("#divCalendar");
-    calendarEl.innerHTML = "";
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
-      height: "auto",
-      events: taskEvents.concat(eventEvents),
-    });
-    calendar.render();
-  }
+      try {
+        const res = await fetch(strBaseURL + `tasks/${taskIndex}/focus`, { method: "PATCH" });
+        if (!res.ok) throw new Error("Failed to update focus");
 
-  function renderCategories(categories) {
-    const ul = $("#navCategories");
-    ul.innerHTML = "";
+        const data = await res.json();
+        const isFocus = !!data.todays_focus;
 
-    const makeLink = (label, mode, catValue = null) => {
-      const li = document.createElement("li");
-      li.className = "nav-item";
+        el.classList.toggle("active", isFocus);
+        const icon = el.querySelector("i");
+        icon.classList.remove("bi-brightness-high", "bi-brightness-high-fill");
+        icon.classList.add(isFocus ? "bi-brightness-high-fill" : "bi-brightness-high");
 
-      const active =
-        (mode === "dashboard" && viewMode === "dashboard") ||
-        (mode === "all" && viewMode === "all") ||
-        (mode === "category" && currentCategory === catValue);
+        await loadDashboard();
+      } catch (err) {
+        showError(err.message || "Focus update error");
+      } finally {
+        el.style.pointerEvents = "";
+        el.style.opacity = "";
+      }
+    }
 
-      li.innerHTML = `
-        <a class="nav-link ${active ? "active" : ""}"
-           href="#"
-           data-mode="${mode}"
-           data-cat="${catValue ?? ""}">
-           ${escapeHtml(label)}
-        </a>
-      `;
-      ul.appendChild(li);
-    };
+    async function toggleStepStatus(taskIndex, stepIndex, el) {
+      clearError();
+      el.style.pointerEvents = "none";
+      el.style.opacity = "0.6";
 
-    makeLink("Dashboard", "dashboard");
-    makeLink("All", "all");
+      try {
+        const res = await fetch(strBaseURL + `tasks/${taskIndex}/steps/${stepIndex}/toggle`, { method: "PATCH" });
+        if (!res.ok) throw new Error("Failed to update step");
 
-    categories.forEach(c => {
-      const name = c.category_name ?? "";
-      if (name.trim() !== "") makeLink(name, "category", name);
-    });
+        const updated = await res.json();
+        document.querySelector(`#stepsWrap_${taskIndex}`).innerHTML = renderStepsHtml(updated.steps, taskIndex);
+      } catch (err) {
+        showError(err.message || "Step update error");
+      } finally {
+        el.style.pointerEvents = "";
+        el.style.opacity = "";
+      }
+    }
 
-    ul.querySelectorAll("a[data-mode]").forEach(a => {
-      a.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        statFilter = null;
-        setPageTitle(null);
+    async function addStep(taskIndex) {
+      clearError();
+      const input = document.querySelector(`#newStepText_${taskIndex}`);
+      const text = (input.value || "").trim();
+      if (!text) return;
 
-        const mode = a.getAttribute("data-mode");
-        const cat = a.getAttribute("data-cat");
+      try {
+        const res = await fetch(strBaseURL + `tasks/${taskIndex}/steps`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
 
-        if (mode === "dashboard") { currentCategory = null; setViewMode("dashboard"); }
-        if (mode === "all") { currentCategory = null; setViewMode("all"); }
-        if (mode === "category") { currentCategory = cat; setViewMode("category"); }
+        if (!res.ok) throw new Error("Failed to add step");
 
-        loadDashboard();
+        const updated = await res.json();
+        document.querySelector(`#stepsWrap_${taskIndex}`).innerHTML = renderStepsHtml(updated.steps, taskIndex);
+        input.value = "";
+        document.querySelector(`#addStepWrap_${taskIndex}`).classList.add("d-none");
+      } catch (err) {
+        showError(err.message || "Add step error");
+      }
+    }
+
+    function fillCategorySelect(selectEl, categories) {
+      selectEl.innerHTML = "";
+      categories.forEach(c => {
+        const name = c.category_name ?? "";
+        if (!name.trim()) return;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        selectEl.appendChild(opt);
       });
+    }
+
+    async function loadCategoriesForModals() {
+      try {
+        const res = await fetch(strBaseURL + "categories");
+        if (!res.ok) return;
+        cacheCategories = await res.json();
+        fillCategorySelect($("#newTaskCategory"), cacheCategories);
+        fillCategorySelect($("#newEventCategory"), cacheCategories);
+        fillCategorySelect($("#editTaskCategory"), cacheCategories);
+        fillCategorySelect($("#editEventCategory"), cacheCategories);
+      } catch {}
+    }
+
+    function setSunToggle(btnEl, checkboxEl, isOn) {
+      btnEl.classList.toggle("active", isOn);
+      const icon = btnEl.querySelector("i");
+      icon.classList.remove("bi-brightness-high", "bi-brightness-high-fill");
+      icon.classList.add(isOn ? "bi-brightness-high-fill" : "bi-brightness-high");
+      checkboxEl.checked = isOn;
+    }
+
+    // New Task sun toggle
+    $("#newTaskFocusBtn").addEventListener("click", () => {
+      setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), !$("#newTaskFocus").checked);
     });
-  }
 
-  async function loadDashboard() {
-    clearError();
-    clearTables();
+    // Edit Task sun toggle
+    $("#editTaskFocusBtn").addEventListener("click", () => {
+      setSunToggle($("#editTaskFocusBtn"), $("#editTaskFocus"), !$("#editTaskFocus").checked);
+    });
 
-    try {
-      const [catsRes, eventsRes, tasksRes] = await Promise.all([
-        fetch(strBaseURL + "categories"),
-        fetch(strBaseURL + "events"),
-        fetch(strBaseURL + "tasks"),
-      ]);
-
-      if (!catsRes.ok) throw new Error("Failed to load /categories");
-      if (!eventsRes.ok) throw new Error("Failed to load /events");
-      if (!tasksRes.ok) throw new Error("Failed to load /tasks");
-
-      const categories = await catsRes.json();
-      const allEventsRaw = await eventsRes.json();
-      const allTasksRaw = await tasksRes.json();
-
-      cacheCategories = categories;
-
-      const allTasks = allTasksRaw.map((t, idx) => ({ ...t, _index: idx }));
-      const allEvents = allEventsRaw.map((e, idx) => ({ ...e, _index: idx }));
-
-      cacheTasks = allTasks;
-      cacheEvents = allEvents;
-
-      renderCategories(categories);
-
-      let events = allEvents;
-      let tasks = allTasks;
-
-      // FIXED: category filter uses backend key category_name
-      if (viewMode === "category" && currentCategory) {
-        events = allEvents.filter(e => (e.category_name ?? "") === currentCategory);
-        tasks  = allTasks.filter(t => (t.category_name ?? "") === currentCategory);
+    // Task + Event table click handling
+    $("#tblTasks").addEventListener("click", (ev) => {
+      const dot = ev.target.closest(".progress-btn");
+      if (dot) {
+        const idx = Number(dot.getAttribute("data-index"));
+        if (!Number.isNaN(idx)) cycleTaskStatus(idx, dot);
+        return;
       }
 
-      const today = new Date();
-      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const focusBtn = ev.target.closest(".focus-btn");
+      if (focusBtn && focusBtn.hasAttribute("data-index")) {
+        const idx = Number(focusBtn.getAttribute("data-index"));
+        if (!Number.isNaN(idx)) toggleTaskFocus(idx, focusBtn);
+        return;
+      }
 
-      // Focus
-      let focusCount = 0;
-      const focusTaskIndexes = new Set();
+      const stepBtn = ev.target.closest(".step-toggle");
+      if (stepBtn) {
+        const t = Number(stepBtn.getAttribute("data-task-index"));
+        const s = Number(stepBtn.getAttribute("data-step-index"));
+        if (!Number.isNaN(t) && !Number.isNaN(s)) toggleStepStatus(t, s, stepBtn);
+        return;
+      }
 
-      const taskEvents = [];
-      const eventEvents = [];
+      const editStepBtn = ev.target.closest(".step-edit");
+        if (editStepBtn) {
+          const t = Number(editStepBtn.getAttribute("data-task-index"));
+          const s = Number(editStepBtn.getAttribute("data-step-index"));
+          if (!Number.isNaN(t) && !Number.isNaN(s)) editStepText(t, s);
+          return;
+        }
 
-      // Events (read-only render + focus + calendar)
-      events.forEach(e => {
-        addEventRow(e, e._index);
+        const delStepBtn = ev.target.closest(".step-delete");
+        if (delStepBtn) {
+          const t = Number(delStepBtn.getAttribute("data-task-index"));
+          const s = Number(delStepBtn.getAttribute("data-step-index"));
+          if (!Number.isNaN(t) && !Number.isNaN(s)) deleteStep(t, s);
+          return;
+        }
 
-        const eventDate = parseDateOnly(e.date);
+      const addBtn = ev.target.closest(".add-step-btn");
+      if (addBtn) {
+        const t = Number(addBtn.getAttribute("data-task-index"));
+        document.querySelector(`#addStepWrap_${t}`).classList.toggle("d-none");
+        return;
+      }
 
-        // FIXED: Focus row uses backend keys
-        if (eventDate && eventDate.getTime() === todayDateOnly.getTime()) {
+      const saveBtn = ev.target.closest(".btn-save-step");
+      if (saveBtn) {
+        const t = Number(saveBtn.getAttribute("data-task-index"));
+        if (!Number.isNaN(t)) addStep(t);
+        return;
+      }
+
+      const editBtn = ev.target.closest(".btn-task-edit");
+      if (editBtn) {
+        const t = Number(editBtn.getAttribute("data-task-index"));
+        openEditTaskModal(t);
+        return;
+      }
+
+      const delBtn = ev.target.closest(".btn-task-delete");
+      if (delBtn) {
+        const t = Number(delBtn.getAttribute("data-task-index"));
+        deleteTask(t);
+        return;
+      }
+    });
+
+    $("#tblEvents").addEventListener("click", (ev) => {
+      const editBtn = ev.target.closest(".btn-event-edit");
+      if (editBtn) {
+        const i = Number(editBtn.getAttribute("data-event-index"));
+        openEditEventModal(i);
+        return;
+      }
+
+      const delBtn = ev.target.closest(".btn-event-delete");
+      if (delBtn) {
+        const i = Number(delBtn.getAttribute("data-event-index"));
+        deleteEvent(i);
+        return;
+      }
+    });
+
+    function setStats({ overdue, dueSoon, incomplete, inProgress, focusCount }) {
+      $("#statOverdue").textContent = overdue;
+      $("#statDueSoon").textContent = dueSoon;
+      $("#statIncomplete").textContent = incomplete;
+      $("#statInProgress").textContent = inProgress;
+      $("#badgeFocusCount").textContent = focusCount;
+    }
+
+    function renderCalendar(taskEvents, eventEvents) {
+      const calendarEl = $("#divCalendar");
+      calendarEl.innerHTML = "";
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        height: "auto",
+        events: taskEvents.concat(eventEvents),
+      });
+      calendar.render();
+    }
+
+    function renderCategories(categories) {
+      const ul = $("#navCategories");
+      ul.innerHTML = "";
+
+      const makeLink = (label, mode, catValue = null) => {
+        const li = document.createElement("li");
+        li.className = "nav-item";
+
+        const active =
+          (mode === "dashboard" && viewMode === "dashboard") ||
+          (mode === "all" && viewMode === "all") ||
+          (mode === "category" && currentCategory === catValue);
+
+        li.innerHTML = `
+          <a class="nav-link ${active ? "active" : ""}"
+             href="#"
+             data-mode="${mode}"
+             data-cat="${catValue ?? ""}">
+             ${escapeHtml(label)}
+          </a>
+        `;
+        ul.appendChild(li);
+      };
+
+      makeLink("Dashboard", "dashboard");
+      makeLink("All", "all");
+
+      categories.forEach(c => {
+        const name = c.category_name ?? "";
+        if (name.trim() !== "") makeLink(name, "category", name);
+      });
+
+      ul.querySelectorAll("a[data-mode]").forEach(a => {
+        a.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          statFilter = null;
+          setPageTitle(null);
+
+          const mode = a.getAttribute("data-mode");
+          const cat = a.getAttribute("data-cat");
+
+          if (mode === "dashboard") { currentCategory = null; setViewMode("dashboard"); }
+          if (mode === "all") { currentCategory = null; setViewMode("all"); }
+          if (mode === "category") { currentCategory = cat; setViewMode("category"); }
+
+          loadDashboard();
+        });
+      });
+    }
+
+    async function loadDashboard() {
+      clearError();
+      clearTables();
+
+      try {
+        const [catsRes, eventsRes, tasksRes] = await Promise.all([
+          fetch(strBaseURL + "categories"),
+          fetch(strBaseURL + "events"),
+          fetch(strBaseURL + "tasks"),
+        ]);
+
+        const categories = catsRes.ok ? await catsRes.json() : [];
+        const allEventsRaw = eventsRes.ok ? await eventsRes.json() : [];
+        const allTasksRaw = tasksRes.ok ? await tasksRes.json() : [];
+
+        cacheCategories = categories;
+        const allTasks = allTasksRaw.map((t, i) => ({ ...t, _index: i }));
+        const allEvents = allEventsRaw.map((e, i) => ({ ...e, _index: i }));
+
+        cacheTasks = allTasks;
+        cacheEvents = allEvents;
+
+        renderCategories(categories);
+
+        let tasks = allTasks;
+        let events = allEvents;
+
+        // ------------------------
+        // Category Filter
+        // ------------------------
+        if (viewMode === "category" && currentCategory) {
+          tasks = tasks.filter(t => t.category_name === currentCategory);
+          events = events.filter(e => e.category === currentCategory);
+        }
+
+        // ------------------------
+        // Stat Card Filter (OVERRIDE EVERYTHING)
+        // ------------------------
+        if (statFilter === "overdue") {
+          const res = await fetch(strBaseURL + "tasks/overdue");
+          if (res.ok) {
+            tasks = (await res.json()).map((t, i) => ({ ...t, _index: i }));
+          }
+          events = [];
+        }
+
+        else if (statFilter === "dueSoon") {
+          const res = await fetch(strBaseURL + "tasks/due_soon");
+          if (res.ok) {
+            tasks = (await res.json()).map((t, i) => ({ ...t, _index: i }));
+          }
+          events = [];
+        }
+
+        else if (statFilter === "incomplete") {
+          const res = await fetch(strBaseURL + "tasks/by_status/incomplete");
+          if (res.ok) {
+            tasks = (await res.json()).map((t, i) => ({ ...t, _index: i }));
+          }
+          events = [];
+        }
+
+        else if (statFilter === "inProgress") {
+          const res = await fetch(strBaseURL + "tasks/by_status/started");
+          if (res.ok) {
+            tasks = (await res.json()).map((t, i) => ({ ...t, _index: i }));
+          }
+          events = [];
+        }
+
+        // ------------------------
+        // Calendar Data
+        // ------------------------
+        const taskEvents = [];
+        const eventEvents = [];
+
+        tasks.forEach(t => {
+          addTaskRow(t, "#tblTasks", t._index);
+
+          if (t.due_date) {
+            taskEvents.push({
+              title: t.task_name,
+              start: t.due_date
+            });
+          }
+        });
+
+        events.forEach(e => {
+          addEventRow(e, e._index);
+
+          if (e.date && e.start) {
+            eventEvents.push({
+              title: e.name,
+              start: e.date + "T" + e.start,
+              end: e.date + "T" + (e.end || e.start)
+            });
+          }
+        });
+
+        // ------------------------
+        // Focus Section
+        // ------------------------
+        const focusTasks = allTasks.filter(t => t.todays_focus);
+        focusTasks.forEach(t => {
           $("#tblFocus tbody").innerHTML += `
             <tr>
-              <td>${escapeHtml(e.event_name ?? "")}</td>
-              <td>${escapeHtml(e.category_name ?? "")}</td>
-              <td>${escapeHtml(e.date ?? "")}</td>
-              <td>—</td>
+              <td>${escapeHtml(t.task_name)}</td>
+              <td>${escapeHtml(t.category_name)}</td>
+              <td>${escapeHtml(t.due_date ?? "")}</td>
+              <td>${escapeHtml(t.weight ?? "")}</td>
             </tr>
           `;
-        }
+        });
 
-        // FIXED: Calendar uses backend keys
-        if (e.date && e.start_time) {
-          eventEvents.push({
-            title: e.event_name ?? "",
-            start: (e.date ?? "") + "T" + (e.start_time ?? "00:00"),
-            end: (e.date ?? "") + "T" + (e.end_time ?? e.start_time ?? "00:00"),
-          });
-        }
+        // ------------------------
+        // Dashboard Stats
+        // ------------------------
+        const dashRes = await fetch(strBaseURL + "dashboard/stats");
+        const dash = dashRes.ok ? await dashRes.json() : {};
+
+        setStats({
+          overdue: dash.overdue ?? 0,
+          dueSoon: dash.dueSoon ?? 0,
+          incomplete: dash.incomplete ?? 0,
+          inProgress: dash.inProgress ?? 0,
+          focusCount: dash.focusCount ?? 0
+        });
+
+        // ------------------------
+        // Render Calendar
+        // ------------------------
+        renderCalendar(taskEvents, eventEvents);
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // -------------------------
+    // Edit/Delete: Tasks
+    // -------------------------
+    async function openEditTaskModal(taskIndex) {
+      clearError();
+      await loadCategoriesForModals();
+
+      const t = cacheTasks.find(x => x._index === taskIndex);
+      if (!t) { showError("Task not found."); return; }
+
+      $("#editTaskIndex").value = String(taskIndex);
+      $("#editTaskName").value = t.task_name ?? "";
+      $("#editTaskDesc").value = t.description ?? "";
+      $("#editTaskDue").value = t.due_date ?? "";
+      $("#editTaskWeight").value = String(t.weight ?? 3);
+
+      // select category if present
+      if (t.category_name) $("#editTaskCategory").value = t.category_name;
+
+      // focus sun
+      setSunToggle($("#editTaskFocusBtn"), $("#editTaskFocus"), !!t.todays_focus);
+
+      const modal = new bootstrap.Modal(document.getElementById("modalEditTask"));
+      modal.show();
+    }
+
+    async function deleteTask(taskIndex) {
+      clearError();
+      if (!confirm("Delete this task? This cannot be undone.")) return;
+
+      const res = await fetch(strBaseURL + `tasks/${taskIndex}`, { method: "DELETE" });
+      if (!res.ok) { showError("Failed to delete task"); return; }
+
+      await loadDashboard();
+    }
+
+    $("#btnSaveTaskEdits").addEventListener("click", async () => {
+      clearError();
+
+      const idx = Number($("#editTaskIndex").value);
+      const payload = {
+        task_name: ($("#editTaskName").value || "").trim(),
+        category_name: $("#editTaskCategory").value || "",
+        description: $("#editTaskDesc").value || "",
+        due_date: $("#editTaskDue").value || null,
+        weight: Number($("#editTaskWeight").value),
+        todays_focus: $("#editTaskFocus").checked
+      };
+
+      if (!payload.task_name) { showError("Task name is required."); return; }
+
+      const res = await fetch(strBaseURL + `tasks/${idx}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
 
-      // Sort tasks by category in All view only (unchanged behavior)
-      if (viewMode === "all") {
-        tasks = [...tasks].sort((a, b) => {
-          const catA = (a.category_name ?? "").toLowerCase();
-          const catB = (b.category_name ?? "").toLowerCase();
-          if (catA < catB) return -1;
-          if (catA > catB) return 1;
-
-          const dueA = parseDateOnly(a.due_date) ?? new Date(9999, 0, 1);
-          const dueB = parseDateOnly(b.due_date) ?? new Date(9999, 0, 1);
-          return dueA - dueB;
-        });
+      if (!res.ok) {
+        let msg = "Failed to save task";
+        try { msg = (await res.json()).detail || msg; } catch {}
+        showError(msg);
+        return;
       }
 
-      tasks.forEach(t => {
-        addTaskRow(t, "#tblTasks", t._index);
+      bootstrap.Modal.getInstance(document.getElementById("modalEditTask")).hide();
+      await loadDashboard();
+    });
 
-        const status = (t.status ?? "").toLowerCase();
-        const due = parseDateOnly(t.due_date);
+    // -------------------------
+    // Edit/Delete: Events
+    // -------------------------
+    async function openEditEventModal(eventIndex) {
+      clearError();
+      await loadCategoriesForModals();
 
-        if (due && status !== "completed") {
-          taskEvents.push({
-            title: t.task_name ?? "",
-            start: due.toISOString().split("T")[0],
-          });
-        }
+      const e = cacheEvents.find(x => x._index === eventIndex);
+      if (!e) { showError("Event not found."); return; }
 
-        const isManualFocus = !!t.todays_focus;
-        const isDueToday = due && due.getTime() === todayDateOnly.getTime() && status !== "completed";
+      $("#editEventIndex").value = String(eventIndex);
+      $("#editEventName").value = e.name ?? "";
+      $("#editEventDesc").value = e.desc ?? "";
+      $("#editEventDate").value = e.date ?? "";
+      $("#editEventStart").value = e.start ?? "";
+      $("#editEventEnd").value = e.end ?? "";
+      if (e.category) $("#editEventCategory").value = e.category;
 
-        if (isManualFocus || isDueToday) {
-          if (!focusTaskIndexes.has(t._index)) {
-            focusTaskIndexes.add(t._index);
-            focusCount++;
+      const modal = new bootstrap.Modal(document.getElementById("modalEditEvent"));
+      modal.show();
+    }
 
-            const focusTag = isManualFocus
-              ? `<i class="bi bi-brightness-high-fill ms-2" style="color: var(--dodate-purple)"></i>`
-              : `<span class="badge bg-primary-subtle text-primary ms-2">Due Today</span>`;
+    async function deleteEvent(eventIndex) {
+      clearError();
+      if (!confirm("Delete this event? This cannot be undone.")) return;
 
-            $("#tblFocus tbody").innerHTML += `
-              <tr>
-                <td>${escapeHtml(t.task_name ?? "")}${focusTag}</td>
-                <td>${escapeHtml(t.category_name ?? "")}</td>
-                <td>${escapeHtml(t.due_date ?? "")}</td>
-                <td>${escapeHtml(t.weight ?? "")}</td>
-              </tr>
-            `;
-          }
-        }
+      const res = await fetch(strBaseURL + `events/${eventIndex}`, { method: "DELETE" });
+      if (!res.ok) { showError("Failed to delete event"); return; }
+
+      await loadDashboard();
+    }
+
+    $("#btnSaveEventEdits").addEventListener("click", async () => {
+      clearError();
+
+      const idx = Number($("#editEventIndex").value);
+
+      // This payload matches the EditEventPayload we discussed:
+      // { name, category, desc, date, start, end }
+      const payload = {
+        name: ($("#editEventName").value || "").trim(),
+        category: $("#editEventCategory").value || "",
+        desc: $("#editEventDesc").value || "",
+        date: $("#editEventDate").value || "",
+        start: $("#editEventStart").value || "",
+        end: $("#editEventEnd").value || ""
+      };
+
+      if (!payload.name) { showError("Event name is required."); return; }
+      if (!payload.date) { showError("Event date is required."); return; }
+
+      const res = await fetch(strBaseURL + `events/${idx}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
 
-      setStats({ focusCount });
-      renderCalendar(taskEvents, eventEvents);
+      if (!res.ok) {
+        let msg = "Failed to save event";
+        try { msg = (await res.json()).detail || msg; } catch {}
+        showError(msg);
+        return;
+      }
 
-    } catch (err) {
-      showError(err.message || "Load error");
-      setStats({ focusCount: 0 });
+      bootstrap.Modal.getInstance(document.getElementById("modalEditEvent")).hide();
+      await loadDashboard();
+    });
 
-      // still render empty calendar so UI doesn't look broken
-      renderCalendar([], []);
+    // -------------------------
+    // Create Task/Event
+    // -------------------------
+    $("#btnCreateTask").addEventListener("click", async () => {
+      clearError();
+
+      const payload = {
+        task_name: ($("#newTaskName").value || "").trim(),
+        category_name: $("#newTaskCategory").value,
+        description: $("#newTaskDesc").value || "",
+        due_date: $("#newTaskDue").value || null,
+        weight: Number($("#newTaskWeight").value),
+        todays_focus: $("#newTaskFocus").checked
+      };
+
+      if (!payload.task_name) { showError("Task name is required."); return; }
+      if (!payload.category_name) { showError("Category is required."); return; }
+
+      $("#btnCreateTask").disabled = true;
+
+      try {
+        const res = await fetch(strBaseURL + "tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          let msg = "Failed to create task";
+          try { msg = (await res.json()).detail || msg; } catch {}
+          throw new Error(msg);
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById("modalNewTask")).hide();
+
+        $("#newTaskName").value = "";
+        $("#newTaskDesc").value = "";
+        $("#newTaskDue").value = "";
+        $("#newTaskWeight").value = "3";
+        setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), false);
+
+        loadDashboard();
+
+      } catch (err) {
+        showError(err.message || "Create task error");
+      } finally {
+        $("#btnCreateTask").disabled = false;
+      }
+    });
+
+    $("#btnCreateEvent").addEventListener("click", async () => {
+      clearError();
+
+      const payload = {
+        name: ($("#newEventName").value || "").trim(),
+        category: $("#newEventCategory").value,
+        desc: $("#newEventDesc").value || "",
+        date: $("#newEventDate").value || "",
+        start: $("#newEventStart").value || "",
+        end: $("#newEventEnd").value || ""
+      };
+
+      if (!payload.name) { showError("Event name is required."); return; }
+      if (!payload.category) { showError("Category is required."); return; }
+      if (!payload.date) { showError("Event date is required."); return; }
+
+      $("#btnCreateEvent").disabled = true;
+
+      try {
+        const res = await fetch(strBaseURL + "events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          let msg = "Failed to create event";
+          try { msg = (await res.json()).detail || msg; } catch {}
+          throw new Error(msg);
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById("modalNewEvent")).hide();
+
+        $("#newEventName").value = "";
+        $("#newEventDesc").value = "";
+        $("#newEventDate").value = "";
+        $("#newEventStart").value = "";
+        $("#newEventEnd").value = "";
+
+        loadDashboard();
+
+      } catch (err) {
+        showError(err.message || "Create event error");
+      } finally {
+        $("#btnCreateEvent").disabled = false;
+      }
+    });
+
+    // -------------------------
+    // Categories CRUD (unchanged)
+    // -------------------------
+    async function refreshCategoriesTable() {
+      const res = await fetch(strBaseURL + "categories");
+      if (!res.ok) return;
+      const cats = await res.json();
+
+      const body = $("#tblCatsBody");
+      body.innerHTML = "";
+
+      cats.forEach((c, idx) => {
+        const name = c.category_name ?? "";
+        const desc = c.description ?? "";
+
+        body.innerHTML += `
+          <tr>
+            <td><input class="form-control form-control-sm" id="catName_${idx}" value="${escapeHtml(name)}"></td>
+            <td><input class="form-control form-control-sm" id="catDesc_${idx}" value="${escapeHtml(desc)}"></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary me-1 btnCatSave" data-index="${idx}">Save</button>
+              <button class="btn btn-sm btn-outline-danger btnCatDelete" data-index="${idx}">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
     }
-  }
 
-  // Create Task (unchanged)
-  $("#btnCreateTask").addEventListener("click", async () => {
-    clearError();
+    document.getElementById("modalCategories").addEventListener("show.bs.modal", refreshCategoriesTable);
 
-    const payload = {
-      task_name: ($("#newTaskName").value || "").trim(),
-      category_name: $("#newTaskCategory").value,
-      description: $("#newTaskDesc").value || "",
-      due_date: $("#newTaskDue").value || null,
-      weight: Number($("#newTaskWeight").value),
-      todays_focus: $("#newTaskFocus").checked
-    };
+    $("#btnCatCreate").addEventListener("click", async () => {
+      clearError();
 
-    if (!payload.task_name) { showError("Task name is required."); return; }
-    if (!payload.category_name) { showError("Category is required."); return; }
+      const payload = {
+        category_name: ($("#catNewName").value || "").trim(),
+        description: $("#catNewDesc").value || ""
+      };
 
-    $("#btnCreateTask").disabled = true;
+      if (!payload.category_name) { showError("Category name is required."); return; }
 
-    try {
-      const res = await fetch(strBaseURL + "tasks", {
+      const res = await fetch(strBaseURL + "categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
-        let msg = "Failed to create task";
+        let msg = "Failed to create category";
         try { msg = (await res.json()).detail || msg; } catch {}
-        throw new Error(msg);
+        showError(msg);
+        return;
       }
 
-      bootstrap.Modal.getInstance(document.getElementById("modalNewTask")).hide();
+      $("#catNewName").value = "";
+      $("#catNewDesc").value = "";
 
-      $("#newTaskName").value = "";
-      $("#newTaskDesc").value = "";
-      $("#newTaskDue").value = "";
-      $("#newTaskWeight").value = "3";
-      setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), false);
+      await refreshCategoriesTable();
+      await loadDashboard();
+    });
 
-      loadDashboard();
+    document.addEventListener("click", async (ev) => {
+      const saveBtn = ev.target.closest(".btnCatSave");
+      if (saveBtn) {
+        clearError();
 
-    } catch (err) {
-      showError(err.message || "Create task error");
-    } finally {
-      $("#btnCreateTask").disabled = false;
-    }
-  });
+        const idx = Number(saveBtn.getAttribute("data-index"));
+        const payload = {
+          category_name: ($("#catName_" + idx).value || "").trim(),
+          description: $("#catDesc_" + idx).value || ""
+        };
 
-  // Modals: load categories on show
-  document.getElementById("modalNewTask").addEventListener("show.bs.modal", async () => {
-    await loadCategoriesForModals();
-    setSunToggle($("#newTaskFocusBtn"), $("#newTaskFocus"), false);
-  });
+        const res = await fetch(strBaseURL + `categories/${idx}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-  // Reload
-  $("#btnReload").addEventListener("click", loadDashboard);
+        if (!res.ok) {
+          let msg = "Failed to edit category";
+          try { msg = (await res.json()).detail || msg; } catch {}
+          showError(msg);
+          return;
+        }
 
-  setViewMode("dashboard");
+        await refreshCategoriesTable();
+        await loadDashboard();
+        return;
+      }
+
+      const delBtn = ev.target.closest(".btnCatDelete");
+      if (delBtn) {
+        clearError();
+
+        const idx = Number(delBtn.getAttribute("data-index"));
+        const res = await fetch(strBaseURL + `categories/${idx}`, { method: "DELETE" });
+        if (!res.ok) { showError("Failed to delete category"); return; }
+
+        await refreshCategoriesTable();
+        await loadDashboard();
+      }
+    });
+
+    // Modals: load categories on show
+    document.getElementById("modalNewTask")
+      .addEventListener("show.bs.modal", async () => {
+        await loadCategoriesForModals();
+      });
+
+    document.getElementById("modalNewEvent")
+      .addEventListener("show.bs.modal", async () => {
+        await loadCategoriesForModals();
+      });
+    // Dashboard click handlers
+    $("#btnReload").addEventListener("click", loadDashboard);
+
+    $("#cardOverdue").addEventListener("click", () => {
+  currentCategory = null;
+  statFilter = "overdue";
+  setViewMode("all");
   loadDashboard();
-</script>
+});
+
+$("#cardDueSoon").addEventListener("click", () => {
+  currentCategory = null;
+  statFilter = "dueSoon";
+  setViewMode("all");
+  loadDashboard();
+});
+
+$("#cardIncomplete").addEventListener("click", () => {
+  currentCategory = null;
+  statFilter = "incomplete";
+  setViewMode("all");
+  loadDashboard();
+});
+
+$("#cardInProgress").addEventListener("click", () => {
+  currentCategory = null;
+  statFilter = "inProgress";
+  setViewMode("all");
+  loadDashboard();
+});
+
+    setViewMode("dashboard");
+    loadDashboard();
+  </script>
 </body>
 </html>
