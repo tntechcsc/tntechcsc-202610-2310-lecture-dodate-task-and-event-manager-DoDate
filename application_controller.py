@@ -314,7 +314,18 @@ def delete_step(task_index: int, step_index: int):
 # -------------------------
 @app.get("/events")
 def get_events():
-    return [e.to_dict() for e in planner.get_events()]
+    return [
+        {
+            "name": e.get_event_name(),
+            "category": e.get_category_name(),
+            "date": e.get_date(),
+            "start": e.get_start_time(),
+            "end": e.get_end_time(),
+            "desc": e.get_description(),
+        }
+        for e in planner.get_events()
+    ]
+
 
 @app.post("/events")
 def create_event(payload: NewEvent):
@@ -340,6 +351,7 @@ def create_event(payload: NewEvent):
         "end": e.get_end_time(),
         "desc": e.get_description(),
     }
+
 
 @app.patch("/events/{event_index}")
 def patch_event(event_index: int, payload: EditEventPayload):
@@ -372,8 +384,10 @@ def patch_event(event_index: int, payload: EditEventPayload):
             "end": ev.get_end_time(),
             "desc": ev.get_description(),
         }
+
     except IndexError:
         raise HTTPException(status_code=404, detail="Event index out of range")
+
 
 @app.delete("/events/{event_index}")
 def delete_event(event_index: int):
